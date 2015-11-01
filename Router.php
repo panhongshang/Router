@@ -1,8 +1,13 @@
 <?php
 	namespace Router;
 	require 'CacheInterface.php';
-	use \CacheInterface;
 	class Router{
+		
+		protected $url;
+		
+		public function __construct(){
+			$this->url = $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
+		}
 		
 		public function simpleRoute(){
 			$ServerArray = str_replace($_SERVER['SCRIPT_NAME'].'/','',$_SERVER['PHP_SELF']);
@@ -57,10 +62,15 @@
 				return $parmas;
 			}
 		}
+		
+		public function responseStatus($status,$callback){
+			if(http_response_code() == $status){
+				$callback();
+			}
+		}
 	}
-	var_dump($_SERVER);
-	$route = new Router();
-	print_r($route->make('/sg',function(){
-		return 'hello';
-	}));
-	print_r($route->make('/seg/dfw','sdfweg@sgeg'));
+	$router = new Router();
+	$router->responseStatus(404,function(){
+		echo 'hello';
+	});
+	
